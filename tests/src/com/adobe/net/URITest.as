@@ -126,6 +126,17 @@ package com.adobe.net
 				mt, mt, mt, mt, mt,	"/images", "blah:somequery", "anchor", mt);
 		}
 		
+		public function testSpecialAIRParsing() : void
+		{
+			var mt:String = "";
+			
+			// Test Adobe AIR special URIs for embedded assets and local temp files
+			parseAndTest("app:/my/path/file.html",
+				"app",	mt, mt, mt, mt, "/my/path/file.html", mt, mt, mt);
+			
+			parseAndTest("app-storage:/my/path/file.html",
+				"app-storage",	mt, mt, mt, mt, "/my/path/file.html", mt, mt, mt);
+		}
 		
 		public function testUnknownParsing() : void
 		{
@@ -287,7 +298,8 @@ package com.adobe.net
 			assertTrue("URI is invalid.", uri.isValid());
 			
 			// Make sure we get out what we expect
-			assertEquals("URI.toString() should output what we input.", expectedURI, uri.toString());
+			var actualURI : String = uri.toString();
+			assertEquals("URI.toString() should output what we input.", expectedURI, actualURI);
 			
 			if (uri.isHierarchical())
 			{
@@ -328,7 +340,8 @@ package com.adobe.net
 			var uri:URI = new URI(inURI);
 		
 			// Make sure we get out what we put in.
-			assertEquals("URI.toString() should output what we input.", inURI, uri.toString());
+			var actualURI : String = uri.toString();
+			assertEquals("URI.toString() should output what we input.", inURI, actualURI);
 		
 			if (uri.isHierarchical())
 			{
@@ -597,6 +610,19 @@ package com.adobe.net
 			assertTrue( "URI should have matched uppercase test extension.", file_uri.isOfFileType( TEST_EXTENSION_UPPERCASE ) );
 		}
 		
+		public function testVerifyScheme() : void
+		{
+			assertTrue( URI.verifyScheme( "HTTP" ) );
+			assertTrue( URI.verifyScheme( "http" ) );
+			assertTrue( URI.verifyScheme( "app-storage" ) );
+			assertTrue( URI.verifyScheme( "git+ssh" ) );
+			assertTrue( URI.verifyScheme( "z39.50s" ) );
+			assertTrue( URI.verifyScheme( "A0K" ) );
+			assertTrue( URI.verifyScheme( "X" ) );
+			
+			assertFalse( URI.verifyScheme( "0" ) );
+		}
+
 		// Interface for IURIResolver
 		public function resolve(uri:URI) : URI
 		{
@@ -608,6 +634,5 @@ package com.adobe.net
 				
 			return uri;
 		}
-		
 	} // end class
 } // end package
