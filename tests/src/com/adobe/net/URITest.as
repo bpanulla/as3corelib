@@ -667,8 +667,8 @@ package com.adobe.net
 			assertTrue( URI.verifyScheme( "z39.50s" ) );
 			assertTrue( URI.verifyScheme( "A0K" ) );
 			assertTrue( URI.verifyScheme( "X" ) );
-			
 			assertFalse( URI.verifyScheme( "0" ) );
+			assertFalse( URI.verifyScheme( "0ff" ) );
 		}
 
 		// Interface for IURIResolver
