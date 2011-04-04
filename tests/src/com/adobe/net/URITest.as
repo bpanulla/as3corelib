@@ -138,6 +138,53 @@ package com.adobe.net
 				"app-storage",	mt, mt, mt, mt, "/my/path/file.html", mt, mt, mt);
 		}
 		
+		public function testUnusualSchemes() : void
+		{
+			var mt:String = "";
+			var uri : URI;
+			
+			/* Checks if the given string only contains characters
+			* valid for a URI scheme as per RFC 3986.
+			* 
+			* http://tools.ietf.org/html/rfc3986
+			* 
+			* Must begin with a letter, and them contain any number
+			* of letters, numbers, or "+", "-", or "."
+			*/
+			
+			// May contain plusses
+			parseAndTest("git+ssh://github.com/mikechambers/as3corelib.git",
+				"git+ssh", mt, mt, "github.com", mt, "/mikechambers/as3corelib.git", mt, mt, mt);
+			
+			// May contain periods, and numbers for that matter
+			parseAndTest("z39.50r://test.com/database",
+				"z39.50r", mt, mt, "test.com", mt, "/database", mt, mt, mt);
+
+			// May contain hyphens
+			parseAndTest("view-source:www.test.com/my/path/file.html",
+				"view-source", mt, mt, mt, mt, mt, mt, mt, "www.test.com/my/path/file.html");
+			
+			// Normalize upper case schemes to lowercase.
+			uri = new URI("HTTP://www.test.com/my/path/file.html");
+			assertEquals( "www.test.com", uri.authority );
+			assertEquals( "/my/path/file.html", uri.path );
+			assertEquals( mt, uri.fragment );
+			assertEquals( mt, uri.query );
+
+			// First character of scheme must be an alphabetic character - not valid in these cases
+			uri = new URI("0http://www.test.com/my/path/file.html");
+			assertEquals( "unknown:", uri.toString() );
+
+			uri = new URI(".http://www.test.com/my/path/file.html");
+			assertEquals( "unknown:", uri.toString() );
+			
+			uri = new URI("+http://www.test.com/my/path/file.html");
+			assertEquals( "unknown:", uri.toString() );
+			
+			uri = new URI("-http://www.test.com/my/path/file.html");
+			assertEquals( "unknown:", uri.toString() );
+		}
+		
 		public function testUnknownParsing() : void
 		{
 			var mt:String = "";
@@ -373,7 +420,8 @@ package com.adobe.net
 				uri.query = query;
 				uri.fragment = fragment;
 				
-				assertEquals("URI.toString() should be the same.", uri.toString(), inURI);
+				actualURI = uri.toDisplayString();
+				assertEquals("URI.toString() should be the same.", actualURI, inURI);
 			}
 			else
 			{

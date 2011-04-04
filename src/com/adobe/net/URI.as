@@ -586,7 +586,7 @@ package com.adobe.net
 		 */
 		public static function verifyScheme(str:String) : Boolean
 		{
-			var pattern:RegExp = /[a-z][a-z0-9.+\-]*/;
+			var pattern:RegExp = /^[a-z][a-z0-9.+\-]*/;
 			var index:int;
 			
 			str = str.toLowerCase();
